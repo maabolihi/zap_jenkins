@@ -3,13 +3,9 @@ def GIT_REPO = "zap_jenkins"
 node {
     stage ('Pre-Requisites') {
         step([$class: 'WsCleanup'])
-        sh """
-	git clone https://github.com/maabolihi/zap_jenkins.git
-	cd \$WORKSPACE/${GIT_REPO}
-        chmod +x pull_docker.sh
-        ./pull_docker.sh -u http://www.itsecgames.com
-	
-        """
+           sh "docker pull owasp/zap2docker-stable"
+           sh "docker run --name deepika -u zap -p 8090:8090 -d owasp/zap2docker-stable zap.sh -daemon -port 8090 -host 0.0.0.0 -config api.disablekey=true"
+           sh "docker exec deepika zap-cli -p 8090 open-url http://testhtml5.vulnweb.com/"
         }
 
     stage ('Run ZAP Scan') {
