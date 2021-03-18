@@ -25,7 +25,7 @@ pipeline {
 		stage('Initialize'){
 			steps{
 				script {
-					currentBuild.displayName = "ZAP scan on ${params.ZAP_TARGET_URL}='${env.BUILD_NUMBER}''"
+					currentBuild.displayName = "#${env.BUILD_NUMBER}-ZAP scan on ${params.ZAP_TARGET_URL}"
 					currentWorkspace=pwd()
 					cleanWs()					
 				}
