@@ -8,9 +8,6 @@ def checkoutGitSCM(branch,gitUrl) {
 	])
 }
 pipeline {
-	agent {
-		node { label 'standard_ubuntu18' }
-	}
     options {
 		timestamps()
 		disableConcurrentBuilds()
