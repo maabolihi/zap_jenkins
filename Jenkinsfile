@@ -1,9 +1,6 @@
 def GIT_REPO = "zap_jenkins"
 
 node {
-agent {
-docker { image 'zap2docker-stable' }
-    }
     stage ('Pre-Requisites') {
         step([$class: 'WsCleanup'])
         sh """
