@@ -1,27 +1,63 @@
-def GIT_REPO = "zap_jenkins"
-
-node {
-    stage ('Pre-Requisites') {
-        step([$class: 'WsCleanup'])
-           sh "docker pull owasp/zap2docker-stable"
-           sh "docker run --name deepika -u zap -p 8090:8090 -d owasp/zap2docker-stable zap.sh -daemon -port 8090 -host 0.0.0.0 -config api.disablekey=true"
-           sh "docker exec deepika zap-cli -p 8090 open-url http://testhtml5.vulnweb.com/"
-        }
-
-    stage ('Run ZAP Scan') {
-        sh """
-        
-	# Run Scan
-        docker exec zap zap-cli --verbose quick-scan http://www.itsecgames.com -l Medium
-        
-        """
-        }
-
-    stage ('Generate Report') {
-        sh """
-
-        docker exec zap zap-cli --verbose report -o /zap/reports/owasp-quick-scan-report.html --output-format html
-
-        """
-        }
+def checkoutGitSCM(branch,gitUrl) {
+	checkout([$class: 'GitSCM',
+		branches: [[name: branch ]],
+		doGenerateSubmoduleConfigurations: false,
+		extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: '.']],
+		submoduleCfg: [],
+		userRemoteConfigs: [[url: gitUrl]]
+	])
+}
+pipeline {
+	agent {
+		node { label 'standard_ubuntu18' }
+	}
+    options {
+		timestamps()
+		disableConcurrentBuilds()
+		buildDiscarder(logRotator(numToKeepStr: '10'))
+		timeout(time: 180, unit: 'MINUTES')
+		ansiColor('xterm')
+	}
+	parameters {
+		string(name: 'ZAP_TARGET_URL', defaultValue:'https:planningtasks.com', description:'')
+		choice(name: 'ZAP_ALERT_LVL', choices: ['High', 'Medium', 'Low'], description: 'See Zap documentation, default High')
+	} 
+	stages{
+		stage('Initialize'){
+			steps{
+				script {
+					currentBuild.displayName = "ZAP scan='${env.BUILD_NUMBER}''"
+					currentWorkspace=pwd()
+					cleanWs()					
+				}
+			}
+		}
+		stage('ZAP'){
+			when { branch 'master' }
+			steps{
+				sh("echo ${env.WORKSPACE}; ls -l;")
+				checkoutGitSCM("master","https://your_git_repo")
+				sh("bash -c \"chmod +x ${env.WORKSPACE}/*.sh\"")
+				sh("${env.WORKSPACE}/validate_input.sh")
+				sh("${env.WORKSPACE}/runZapScan.sh ${params.ZAP_TARGET_URL} ${env.WORKSPACE} ${params.ZAP_ALERT_LVL}")
+			}
+		}
+		stage('Publish'){
+			when { branch 'master' }
+			steps{
+				publishHTML([allowMissing: false,
+				alwaysLinkToLastBuild: false,
+				keepAll: false,
+				reportDir: './reports',
+				reportFiles: 'report.html',
+				reportName: 'ZAP scan report',
+				reportTitles: ''])
+			}
+		}
+	}
+	 post {
+        always {
+            sh("${env.WORKSPACE}/runCleanup.sh")
+        }	
+	}
 }
