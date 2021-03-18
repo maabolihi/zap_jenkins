@@ -5,7 +5,7 @@ node {
         # Pull zap docker stable
         docker pull owasp/zap2docker-stable
 	
-        docker run --detach --name zap -u zap -v "$(pwd)/reports":/zap/reports/:rw \
+        docker run --detach --name zap -u zap -v "\$(pwd)/reports":/zap/reports/:rw \
   	-i owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080 \
   	-config api.addrs.addr.name=.* -config api.addrs.addr.regex=true \
   	-config api.disablekey=true
