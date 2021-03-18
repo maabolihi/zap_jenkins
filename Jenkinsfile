@@ -16,7 +16,6 @@ pipeline {
 		disableConcurrentBuilds()
 		buildDiscarder(logRotator(numToKeepStr: '10'))
 		timeout(time: 180, unit: 'MINUTES')
-		ansiColor('xterm')
 	}
 	parameters {
 		string(name: 'ZAP_TARGET_URL', defaultValue:'https:planningtasks.com', description:'')
