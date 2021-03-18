@@ -35,7 +35,7 @@ pipeline {
 			when { branch 'main' }
 			steps{
 				sh("echo ${env.WORKSPACE}; ls -l;")
-				checkoutGitSCM("master","https://github.com/maabolihi/zap_jenkins.git")
+				checkoutGitSCM("main","https://github.com/maabolihi/zap_jenkins.git")
 				sh("bash -c \"chmod +x ${env.WORKSPACE}/*.sh\"")
 				sh("${env.WORKSPACE}/validate_input.sh")
 				sh("${env.WORKSPACE}/runZapScan.sh ${params.ZAP_TARGET_URL} ${env.WORKSPACE} ${params.ZAP_ALERT_LVL}")
