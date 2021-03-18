@@ -1,3 +1,5 @@
+def GIT_REPO = "zap_jenkins"
+
 node {
     stage ('Pre-Requisites') {
         step([$class: 'WsCleanup'])
