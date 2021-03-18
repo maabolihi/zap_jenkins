@@ -32,7 +32,7 @@ pipeline {
 			}
 		}
 		stage('ZAP'){
-			when { branch 'master' }
+			when { branch 'main' }
 			steps{
 				sh("echo ${env.WORKSPACE}; ls -l;")
 				checkoutGitSCM("master","https://github.com/maabolihi/zap_jenkins.git")
@@ -42,7 +42,7 @@ pipeline {
 			}
 		}
 		stage('Publish'){
-			when { branch 'master' }
+			when { branch 'main' }
 			steps{
 				publishHTML([allowMissing: false,
 				alwaysLinkToLastBuild: false,
