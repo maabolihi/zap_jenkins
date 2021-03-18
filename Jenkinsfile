@@ -9,7 +9,7 @@ def checkoutGitSCM(branch,gitUrl) {
 }
 pipeline {
 	agent {
-		node {}
+		node { label 'test' }
 	}
     options {
 		timestamps()
