@@ -7,7 +7,7 @@ node {
 	git clone https://github.com/maabolihi/zap_jenkins.git
 	cd \$WORKSPACE/${GIT_REPO}
         chmod +x pull_docker.sh
-        ./pull_docker.sh -u http://www.itsecgames.com -a Medium
+        ./pull_docker.sh -u http://www.itsecgames.com
 	
         """
         }
