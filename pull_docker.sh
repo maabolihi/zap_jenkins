@@ -42,16 +42,16 @@ function check_exit_code {
 }
 
 function is_zap_running() {
-  ZAP_STATUS=$(docker exec zap zap-cli status | grep -c INFO)
+  ZAP_STATUS=$(sudo docker exec zap zap-cli status | grep -c INFO)
   if [[ "${ZAP_STATUS}" == 1 ]]; then IS_ZAP_RUNNING=1; fi
 }
 
 function remove_zap_container() {
-  docker rm -f "${CONTAINER_NAME}"
+  sudo docker rm -f "${CONTAINER_NAME}"
 }
 
 function run_in_zap_container() {
-  ZAP_COMMAND="docker exec ${CONTAINER_NAME} zap-cli --verbose $1"
+  ZAP_COMMAND="sudo docker exec ${CONTAINER_NAME} zap-cli --verbose $1"
   echo 'Running...'
   echo "${ZAP_COMMAND}"
   echo ''
@@ -76,7 +76,7 @@ check_exit_code $? "with changing permission"
 
 # Start zap container
 remove_zap_container
-docker run --detach --name "${CONTAINER_NAME}" -u zap -v "${REPORTS_FOLDER}":/zap/reports/:rw \
+sudo docker run --detach --name "${CONTAINER_NAME}" -u zap -v "${REPORTS_FOLDER}":/zap/reports/:rw \
   -i owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port "${PORT}" \
   -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true \
   -config api.disablekey=true
@@ -101,7 +101,7 @@ if [[ ! -e "${REPORT_PATH}" ]]; then
 fi
 
 # Check alerts
-ALERT_NUM=$(docker exec "${CONTAINER_NAME}" zap-cli --verbose alerts --alert-level "${ALERT_LEVEL}" -f json | jq length)
+ALERT_NUM=$(sudo docker exec "${CONTAINER_NAME}" zap-cli --verbose alerts --alert-level "${ALERT_LEVEL}" -f json | jq length)
 
 if [[ "${OPEN_REPORT}" == 1 ]]; then
   launch_html_report
