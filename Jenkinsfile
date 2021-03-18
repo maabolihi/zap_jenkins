@@ -6,8 +6,8 @@ node {
         sh """
 	git clone https://github.com/maabolihi/zap_jenkins.git
 	cd \$WORKSPACE/${GIT_REPO}
-        # Pull zap docker stable
-	docker pull owasp/zap2docker-stable
+        chmod +x pull_docker.sh
+        ./pull_docker.sh
 	
         """
         }
