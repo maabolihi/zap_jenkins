@@ -8,6 +8,9 @@ def checkoutGitSCM(branch,gitUrl) {
 	])
 }
 pipeline {
+	agent {
+		node {}
+	}
     options {
 		timestamps()
 		disableConcurrentBuilds()
